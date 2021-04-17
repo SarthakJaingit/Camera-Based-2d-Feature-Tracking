@@ -4,7 +4,7 @@
 
 using namespace std;
 
-//Current Project Bugs: Calvin Detector, Some Descriptors not working// Flann Based matching is not working.
+//Current Project Bugs: Harris Detector, Some Descriptors not working.
 
 // Find best matches for keypoints in two camera images based on several matching methods
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
@@ -18,10 +18,19 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     {
         int normType = cv::NORM_HAMMING;
         matcher = cv::BFMatcher::create(normType, crossCheck);
+
+        cout << "Brute Force Matching" << endl; 
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
+        // Implement this matching 
+        if (descSource.type() != CV_32F || descRef.type() != CV_32F){
+            descSource.convertTo(descSource, CV_32F); 
+            descRef.convertTo(descRef, CV_32F); 
+        }
+
         matcher = cv::FlannBasedMatcher::create(); 
+        cout << "Flann based Matching" << endl; 
     }
 
     // perform matching task
@@ -204,33 +213,35 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
     int aperture_size = 3;
     double k = 0.04;
 
-    int thresh = 200; 
+    int thresh = 50; 
 
-    cv::Mat new_img = img.clone(); 
-    cv::cornerHarris(img, new_img, blocksize, aperture_size, k); 
+    cv::Mat dst, dst_norm, dst_norm_scaled; 
+    dst = cv::Mat::zeros(img.size(), CV_32FC1);
+    cv::cornerHarris(img, dst, blocksize, aperture_size, k); 
 
-    cv::Mat newimg_norm, newimg_norm_scaled; 
+    cv::normalize(dst, dst_norm,0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat());
+    cv::convertScaleAbs(dst_norm, dst_norm_scaled);
 
-    cv::normalize(img, newimg_norm,0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat());
-    cv::convertScaleAbs( newimg_norm, newimg_norm);
-
-    for (size_t i = 0; i < newimg_norm.rows; ++i){
-        for (size_t j = 0; j < newimg_norm.cols; ++j){
-            if (newimg_norm.at<float>(i, j) > thresh){
+    for (size_t i = 0; i < dst_norm.rows; ++i){
+        for (size_t j = 0; j < dst_norm.cols; ++j){
+            if (dst_norm.at<float>(i, j) > thresh){ 
                 cv::KeyPoint newKeyPoint; 
                 newKeyPoint.pt = cv::Point2f(i, j); 
                 newKeyPoint.size = 2 * aperture_size; 
                 keypoints.push_back(newKeyPoint); 
+                
             }
         }
     }
 
+    cout << keypoints.size() << endl; 
+
     // visualize results
     if (bVis)
     {
-        cv::Mat visImage = img.clone();
-        cv::drawKeypoints(img, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        cv::Mat visImage = dst_norm_scaled.clone(); 
         string windowName = "Harris Corner Detection Results";
+        cv::drawKeypoints(dst_norm_scaled, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
         cv::namedWindow(windowName, 6);
         imshow(windowName, visImage);
         cv::waitKey();
