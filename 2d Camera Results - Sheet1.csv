@@ -1,0 +1,28 @@
+Detector Type,Amount of Points in cv::Rec detected,Image: 1,2,3,4,5,6,7,8,9,10,Typical Time Range for Detection
+BRISK,,264,282,282,277,297,279,289,272,266,254,40 - 50 ms
+HARRIS,,54,44,68,63,90,383,40,142,101,209,9 - 13 ms
+SHITOMASI,,125,118,123,120,120,113,114,123,111,112,9 - 14 ms
+FAST ,,149,152,150,155,149,149,156,150,138,143,0.6 - 0.8 ms
+ORB,,92,102,106,113,109,125,130,129,127,128,6 - 7 ms
+AKAZE,,166,157,161,155,163,164,173,175,177,179,45 - 55 ms
+SIFT,,138,132,124,137,134,140,137,148,159,137,60 - 80 ms
+,,,,,,,,,,,,
+,Descriptor Type: ,Desc Time,,,,,,,,,,
+Chosen: FAST ,BRISK,1.6 - 2.5 ms,,,,,,,,,,
+,FREAK,19 - 21 ms,,,,,,,,,,
+,ORB ,2 - 3 ms,,,,,,,,,,
+,BRIEF ,0.99 - 2.22 ms,,,,,,,,,,
+,SIFT ,11.5 - 15.5 ms,,,,,,,,,,
+AKAZE,AKAZE,40 - 45 ms,,,,,,,,,,
+,,,,,,,,,,,,
+Chosen:,Matching Type: with SEL_KNN (accurate),,SEL_NN ,,,,,,,,,
+FAST + BRIEF,BFMatcher (Brute Force matching),0.2 - 0.3 ms,0.19 - 0.22 ms,,,,,,,,,
+,FLANN Matcher (Uses KD Tree Struct),1.5 - 1.8 ms ,1.1 - 1.5 ms,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+Note: Always same images so keypoint stats are contstant.,,,,,,,,,,,,
+,,,,,,,,,,,,
+My Best Choice ,FAST detector,,,,,,,,,,,
+,BRIEF descriptor ,,,,,,,,,,,
+,BF Matcher (Brute Force),,,,,,,,,,,
+,SEL KNN,,,,,,,,,,,
