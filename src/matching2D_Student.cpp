@@ -4,7 +4,7 @@
 
 using namespace std;
 
-//Current Project Bugs: Harris Detector, Some Descriptors not working.
+//Current Project Bugs: Some Descriptors not working some pairs work. All the the pairs with brisk work. 
 
 // Find best matches for keypoints in two camera images based on several matching methods
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
@@ -209,14 +209,19 @@ void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool b
 
 void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis){
 
+
+    // Debugged Issues is that when Point(x, y) the row you are on is the y and the column you are on is the x
+
     int blocksize = 2; 
     int aperture_size = 3;
     double k = 0.04;
 
-    int thresh = 50; 
+    int thresh = 100; 
 
     cv::Mat dst, dst_norm, dst_norm_scaled; 
-    dst = cv::Mat::zeros(img.size(), CV_32FC1);
+    dst = img.clone();  
+
+    double t = (double)(cv::getTickCount()); 
     cv::cornerHarris(img, dst, blocksize, aperture_size, k); 
 
     cv::normalize(dst, dst_norm,0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat());
@@ -226,7 +231,7 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
         for (size_t j = 0; j < dst_norm.cols; ++j){
             if (dst_norm.at<float>(i, j) > thresh){ 
                 cv::KeyPoint newKeyPoint; 
-                newKeyPoint.pt = cv::Point2f(i, j); 
+                newKeyPoint.pt = cv::Point2f(j, i); 
                 newKeyPoint.size = 2 * aperture_size; 
                 keypoints.push_back(newKeyPoint); 
                 
@@ -234,7 +239,8 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
         }
     }
 
-    cout << keypoints.size() << endl; 
+    t = ((double)(cv::getTickCount()) - t) / cv::getTickFrequency(); 
+    cout << "Harris detection with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 
     // visualize results
     if (bVis)
