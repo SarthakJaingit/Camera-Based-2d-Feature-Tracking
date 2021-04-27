@@ -11,4 +11,13 @@ My best choice and explanation:
 
 * SELKNN -> While this matching step was slower than NN since it involved extra computation to remove ambigous points, it is a more stable practice since it leads to more accurate matches.
 
+Next choices:
+* BRISK and BRIEF -> Most keypoints and fastest descriptor
+* FAST and BRISK -> FAST found keypoints with little time and worked fast with a BRISK descriptor.
+
+Close:
+* Harris and BRIEF -> less but visualized more accurate keypoints and fastest descriptor
+
+## Important Note: My results and captured data are all in the csv file attatched to the github.
+
 
